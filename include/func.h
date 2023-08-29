@@ -2,9 +2,9 @@
 
 // Free all memory allocated for element. When NULL is passed to the 
 // function, it should have no effect.
-// This function is required to initialize all data structures. When set to
-// NULL, memory is not de-allocated for the elements held by the pointers
-// stored in the data structure.
+// This function is required to initialize all data structures and is used by
+// functions that delete elements. When set to NULL, memory is not de-allocated
+// for the elements held by the pointers stored in the data structure.
 
 typedef void (*destroyFunc)(void *);
 

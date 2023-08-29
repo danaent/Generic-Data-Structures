@@ -211,7 +211,22 @@ PQ pq_copy(PQ pq, copyFunc copy)
     if (copy)
     {
         for (size_t i = 0; i < pq->size; i++)
+        {
             pq2->heap[i] = copy(pq->heap[i]);
+
+            // Failed to allocate memory
+            if (!pq2->heap[i])
+            {
+                if (pq->destroy)
+                {
+                    for (size_t j = 0; j < i; j++)
+                        pq->destroy(pq2->heap[j]);
+                }
+                
+                free(pq2->heap); free(pq2);
+                pq->flag = ALLOC; return NULL;
+            }
+        }
     }
     // Else do a shallow copy
     else memcpy(pq2->heap, pq->heap, pq->size * sizeof(void *));

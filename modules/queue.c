@@ -121,87 +121,26 @@ bool queue_contains(Queue queue, void *data, cmpFunc cmp)
 Queue queue_copy(Queue queue, copyFunc copy)
 {
     // Initialize new queue
-    Queue queue2 = malloc(sizeof(struct queue));
-    ERR_ALLOC(queue, queue2)
+    Queue queue2 = queue_init(queue->destroy);
+    ERR_ALLOC(queue, queue2);
 
-    queue2->head = NULL;
-    queue2->tail = NULL;
-    queue2->size = queue->size;
-    queue2->destroy = queue->destroy;
+    Node cur_node = queue->head;
 
-    // If queue is empty return copy now
-    if (!queue->size) return queue2;
-
-    // Otherwise allocate memory for new head
-    queue2->head = malloc(sizeof(struct node));
-
-    if (!queue2->head)
+    // Enqueue every element of old queue to new queue
+    while(cur_node)
     {
-        queue->flag = ALLOC;
-        free(queue2); return NULL;
-    }
+        void *data = copy ? copy(cur_node->data) : cur_node->data;
 
-    Node last_copied = queue2->head; // Iterator for new queue
-    Node cur_node = queue->head->next; // Iterator for old queue
-
-    // If copy function is given, do a deep copy
-    if (copy)
-    {
-        // Copy old queue's head node
-        queue2->head->data = copy(queue->head->data);
-
-        // Iterate over old queue and copy every element
-        while (cur_node)
+        // In case of failed allocation, free memory allocated for new queue
+        if (!data || !queue_enqueue(queue2, data))
         {
-            Node new_node = malloc(sizeof(struct node));
-            
-            // In case of failed allocation free all memory already allocated for new queue
-            if (!new_node)
-            {
-                queue->flag = ALLOC;
-                last_copied->next = NULL;
-                queue2->tail = last_copied;
-                queue_destroy(queue2);
-                return NULL;
-            }
-
-            new_node->data = copy(cur_node->data);
-            last_copied->next = new_node;
-
-            last_copied = new_node;
-            cur_node = cur_node->next;
+            queue->flag = ALLOC;
+            queue_destroy(queue2);
+            return NULL;
         }
+
+        cur_node = cur_node->next;
     }
-    else
-    {
-        queue2->head->data = queue->head->data;
-
-        while (cur_node)
-        {
-            Node new_node = malloc(sizeof(struct node));
-            
-            if (!new_node)
-            {
-                queue->flag = ALLOC;
-                last_copied->next = NULL;
-                queue2->tail = last_copied;
-                queue_destroy(queue2);
-                return NULL;
-            }
-
-            new_node->data = cur_node->data;
-            last_copied->next = new_node;
-
-            last_copied = new_node;
-            cur_node = cur_node->next;
-
-        }
-    }
-
-    // End queue in NULL and set tail pointer
-    last_copied->next = NULL;
-    queue2->tail = last_copied;
-    queue2->flag = OK;
 
     return queue2;
 }

@@ -12,7 +12,7 @@ LIB = libgds
 
 # Targets
 .PHONY:
-	lib
+	lib clean
 
 lib:
 	$(CC) $(CFLAGS) -c $(SRC_FILES)

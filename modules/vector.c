@@ -554,7 +554,22 @@ Vector vector_copy(Vector vector, copyFunc copy)
     if (copy)
     {
         for (size_t i = 0; i < vector->size; i++)
+        {
             vector2->array[i] = copy(vector->array[i]);
+
+            // Failed to allocate memory
+            if (!vector2->array[i])
+            {
+                if (vector->destroy)
+                {
+                    for (size_t j = 0; j < i; j++)
+                        vector->destroy(vector2->array[j]);
+                }
+                
+                free(vector2->array); free(vector2);
+                vector->flag = ALLOC; return NULL;
+            }
+        }
     }
     // Else, do a shallow copy
     else memcpy(vector2->array, vector->array, vector->size * sizeof(void *));

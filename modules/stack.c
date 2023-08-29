@@ -125,56 +125,37 @@ Stack stack_copy(Stack stack, copyFunc copy)
     Node last_copied = stack2->top; // Iterator for new stack
     Node cur_node = stack->top->next; // Iterator for old stack
 
-    // If copy function is given, do a deep copy
-    if (copy)
+    // Copy old stack's top node
+    stack2->top->data = copy ? copy(stack->top->data) : stack->top->data;
+
+    if (!stack2->top->data)
     {
-        // Copy old stack's top node
-        stack2->top->data = copy(stack->top->data);
-
-        // Iterate over old stack and copy every element
-        while (cur_node)
-        {
-            Node new_node = malloc(sizeof(struct node));
-
-            // In case of failed allocation free all memory already allocated for new stack
-            if (!new_node)
-            {
-                stack->flag = ALLOC;
-                last_copied->next = NULL;
-                stack_destroy(stack2); 
-                return NULL;
-            }
-
-            new_node->data = copy(cur_node->data);
-            last_copied->next = new_node;
-
-            last_copied = new_node;
-            cur_node = cur_node->next;
-        }
+        stack->flag = ALLOC;
+        stack2->top->next = NULL;
+        stack_destroy(stack2);
+        return NULL;
     }
-    // Otherwise do a shallow copy
-    else
+
+    // Iterate over old stack and copy every element
+    while (cur_node)
     {
-        stack2->top->data = stack->top->data;
+        Node new_node = malloc(sizeof(struct node));
+        void *data = copy ? copy(cur_node->data) : cur_node->data;
 
-        while (cur_node)
+        // In case of failed allocation, free memory allocated for new stack
+        if (!data || !new_node)
         {
-            Node new_node = malloc(sizeof(struct node));
-            
-            if (!new_node)
-            {
-                stack->flag = ALLOC;
-                last_copied->next = NULL;
-                stack_destroy(stack2); 
-                return NULL;
-            }
-
-            new_node->data = cur_node->data;
-            last_copied->next = new_node;
-
-            last_copied = new_node;
-            cur_node = cur_node->next;
+            stack->flag = ALLOC;
+            last_copied->next = NULL;
+            stack_destroy(stack2); 
+            return NULL;
         }
+
+        new_node->data = data;
+        last_copied->next = new_node;
+
+        last_copied = new_node;
+        cur_node = cur_node->next;
     }
 
     // End stack in NULL

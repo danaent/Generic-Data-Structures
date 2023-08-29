@@ -11,30 +11,30 @@ enum str_err_flags
 
 // MACROS FOR QUICK ERROR CHECKING
 
-#define ERR_ALLOC(adt, ptr) \
+#define ERR_ALLOC(str, ptr) \
 if (!ptr) \
 { \
-    adt->flag = ALLOC; \
+    str->flag = ALLOC; \
     return 0; \
 }
 
-#define ERR_EMPTY(adt) \
-if (!adt->size) \
+#define ERR_EMPTY(str) \
+if (!str->size) \
 { \
-    adt->flag = EMPTY; \
+    str->flag = EMPTY; \
     return 0; \
 }
 
-#define ERR_FUNC(adt, func) \
+#define ERR_FUNC(str, func) \
 if (!func) \
 { \
-    adt->flag = FUNC; \
+    str->flag = FUNC; \
     return 0; \
 }
 
-#define ERR_BOUNDS(adt, i, max) \
+#define ERR_BOUNDS(str, i, max) \
 if (i >= max) \
 { \
-    adt->flag = BOUNDS; \
+    str->flag = BOUNDS; \
     return 0; \
 }

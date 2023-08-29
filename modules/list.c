@@ -612,38 +612,26 @@ bool list_insert_sorted(List list, void *data, cmpFunc cmp)
 
 List list_copy(List list, copyFunc copy)
 {
+    // Initialize new list
     List list2 = list_init(list->destroy);
     ERR_ALLOC(list, list2)
 
     Node cur_node = list->head;
 
-    if (copy)
+    // Append every element of old list to new list
+    while(cur_node)
     {
-        while(cur_node)
-        {
-            if (!list_append(list2, copy(cur_node->data)))
-            {
-                list->flag = ALLOC;
-                list_destroy(list2);
-                return NULL;
-            }
+        void *data = copy ? copy(cur_node->data) : cur_node->data;
 
-            cur_node = cur_node->next;
-        }
-    }
-    else
-    {
-        while(cur_node)
+        // In case of failed allocation, free memory allocated for new list
+        if (!data || !list_append(list2, data))
         {
-            if (!list_append(list2, cur_node->data))
-            {
-                list->flag = ALLOC;
-                list_destroy(list2);
-                return NULL;
-            }
-
-            cur_node = cur_node->next;
+            list->flag = ALLOC;
+            list_destroy(list2);
+            return NULL;
         }
+
+        cur_node = cur_node->next;
     }
 
     return list2;
