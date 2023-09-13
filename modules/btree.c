@@ -545,7 +545,7 @@ static void *node_remove(Node node, void *data, int min, cmpFunc cmp)
 // Free memory allocated for the tree rooted at node
 static void node_destroy_all(Node node, destroyFunc destroy)
 {
-    if (node == NULL)
+    if (!node)
         return;
 
     // Destroy every subtree

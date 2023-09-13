@@ -52,5 +52,8 @@ void btree_clear(BTree abtree);
 // Free memory allocated for tree
 void btree_destroy(BTree abtree);
 
+// Change destroy function for tree
+void btree_set_destroy(BTree btree, destroyFunc destroy);
+
 // Return tree flag
 int btree_flag(BTree abtree);

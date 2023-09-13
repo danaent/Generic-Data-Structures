@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 #include "../include/list.h" // Include the header files of the data structures you want to use
 
 // Comparator function for strings
@@ -15,6 +16,7 @@ int main(void)
     // that will handle strings. We don't need memory to be de-allocated for those
     // strings, so we set the destroy function to NULL.
     List str_list = list_init(NULL);
+    assert(str_list != NULL);
 
     // Add some strings to the list
     list_append(str_list, "Hello");

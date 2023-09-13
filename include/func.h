@@ -16,8 +16,8 @@ typedef void (*destroyFunc)(void *);
 // > 0 if p1 follows p2, or has a lower priority
 
 // This function is required for data structures where each element is
-// associated with a priority, such as the priority queue or the B-tree. It
-// cannot be NULL.
+// associated with a priority, such as the priority queue or the Red-Black Tree.
+// It cannot be NULL.
 
 typedef int (*cmpFunc)(const void *, const void *);
 
